@@ -1,0 +1,83 @@
+<header>
+    <nav>
+        <div class="logo" (click)="navigateToHome()">Roma Antica</div>
+        <ul class="nav-links">
+            <li><a (click)="scrollToSection('home')">Home</a></li>
+            <li><a (click)="navigateToHome()">La Nostra Storia</a></li>
+            <li><a class="active">Menu</a></li>
+            <li><a (click)="navigateToHome()">Contatti</a></li>
+        </ul>
+    </nav>
+</header>
+
+<section class="menu-hero">
+    <div class="menu-hero-overlay"></div>
+    <img src="https://images.unsplash.com/photo-1515669097368-22e68427d265?w=1920&q=80" alt="Menu Roma Antica">
+    <div class="menu-hero-content">
+        <h1>Il Nostro Menu</h1>
+        <p>Un viaggio nei sapori della tradizione romana</p>
+    </div>
+</section>
+
+<div class="menu-nav-wrapper">
+    <nav class="menu-nav">
+        <button 
+            *ngFor="let cat of categories" 
+            [class.active]="selectedCategory === cat.id"
+            (click)="selectCategory(cat.id)">
+            {{cat.label}}
+        </button>
+    </nav>
+</div>
+
+<section class="menu-content">
+    <div class="container">
+        <div *ngFor="let cat of categories" [id]="cat.id" class="menu-category">
+            <h2 class="category-title">{{menuData[cat.id].title}}</h2>
+            <div class="menu-grid">
+                <div *ngFor="let item of menuData[cat.id].items" class="menu-item">
+                    <div class="item-header">
+                        <div class="item-title-wrapper">
+                            <h3 class="item-name">{{item.name}}</h3>
+                            <span *ngIf="item.recommended" class="recommended-badge">Chef's Choice</span>
+                            <span *ngIf="item.vegetarian" class="vegetarian-badge">🌱</span>
+                        </div>
+                        <span class="item-price">€{{item.price}}</span>
+                    </div>
+                    <p class="item-description">{{item.description}}</p>
+                    <p *ngIf="item.allergens" class="item-allergens">
+                        <span class="allergen-icon">⚠️</span> {{item.allergens}}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-footer-cta">
+            <h2>Pronto per un'esperienza indimenticabile?</h2>
+            <p>Prenota il tuo tavolo e lasciati conquistare dai sapori di Roma</p>
+            <button (click)="navigateToBooking()" class="btn btn-primary">Prenota Ora</button>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>Roma Antica</h3>
+            <p>L'eccellenza della cucina romana</p>
+        </div>
+        <div class="footer-section">
+            <h3>Contatti</h3>
+            <p>Via Esempio 123, Milano<br>
+                Tel: +39 02 1234567<br>
+                info&#64;romaantica.it</p>
+        </div>
+        <div class="footer-section">
+            <h3>Orari</h3>
+            <p>Martedì - Sabato<br>
+                19:30 - 23:00<br>
+                Domenica chiuso</p>
+        </div>
+    </div>
+    <p>&copy; 2025 Roma Antica. Tutti i diritti riservati.</p>
+</footer>

@@ -1,0 +1,65 @@
+<header>
+    <nav>
+        <div class="logo">Roma Antica</div>
+        <ul class="nav-links">
+            <li><a (click)="scrollToSection('home')">Home</a></li>
+            <li><a (click)="scrollToSection('storia')">La Nostra Storia</a></li>
+            <li><a (click)="navigateToMenu()">Menu</a></li>
+            <li><a (click)="scrollToSection('contatti')">Contatti</a></li>
+        </ul>
+    </nav>
+</header>
+
+<section class="hero-slider" id="home">
+    <div *ngFor="let slide of slides; let i = index" #slide class="slide" [class.active]="i === currentSlide">
+        <img [src]="slide.url" [alt]="slide.alt">
+    </div>
+
+    <div class="hero-content">
+        <h1>Roma Antica</h1>
+        <p>Un viaggio nella tradizione culinaria romana</p>
+        <div class="cta-buttons">
+            <a (click)="navigateToBooking()" class="btn btn-primary">Prenota un Tavolo</a>
+            <a (click)="navigateToMenu()" class="btn btn-secondary">Scopri il Menu</a>
+        </div>
+    </div>
+
+    <div class="slider-dots">
+        <span *ngFor="let slide of slides; let i = index" #dot class="dot" [class.active]="i === currentSlide"
+            (click)="goToSlide(i)">
+        </span>
+    </div>
+</section>
+
+<section class="section" id="storia">
+    <h2>La Nostra Storia</h2>
+    <p class="intro-text">
+        Nel cuore della città, Roma Antica rappresenta l'essenza della cucina romana autentica,
+        reinterpretata con creatività e passione. Ogni piatto è un omaggio alla tradizione,
+        eseguito con tecnica impeccabile e ingredienti di altissima qualità.
+        La nostra filosofia è semplice: rispettare il passato mentre guardiamo al futuro,
+        creando esperienze gastronomiche indimenticabili.
+    </p>
+</section>
+
+<footer id="contatti">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>Roma Antica</h3>
+            <p>L'eccellenza della cucina romana</p>
+        </div>
+        <div class="footer-section">
+            <h3>Contatti</h3>
+            <p>Via Esempio 123, Milano<br>
+                Tel: +39 02 1234567<br>
+                info&#64;romaantica.it</p>
+        </div>
+        <div class="footer-section">
+            <h3>Orari</h3>
+            <p>Martedì - Sabato<br>
+                19:30 - 23:00<br>
+                Domenica chiuso</p>
+        </div>
+    </div>
+    <p>&copy; 2025 Roma Antica. Tutti i diritti riservati.</p>
+</footer>
