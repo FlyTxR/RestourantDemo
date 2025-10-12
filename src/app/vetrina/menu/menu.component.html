@@ -21,84 +21,88 @@
 
 <!-- Loading State -->
 @if (loading()) {
-    <div class="loading-container">
-        <div class="spinner"></div>
-        <p>Caricamento del menu...</p>
-    </div>
+<div class="loading-container">
+    <div class="spinner"></div>
+    <p>Caricamento del menu...</p>
+</div>
 }
 
 <!-- Error State -->
 @if (error()) {
-    <div class="error-container">
-        <p class="error-message">{{ error() }}</p>
-        <button (click)="loadMenuData()" class="btn btn-primary">Riprova</button>
-    </div>
+<div class="error-container">
+    <p class="error-message">{{ error() }}</p>
+    <button (click)="loadMenuData()" class="btn btn-primary">Riprova</button>
+</div>
 }
 
 <!-- Menu Content -->
 @if (!loading() && !error()) {
-    <div class="menu-nav-wrapper">
-        <nav class="menu-nav">
-            @for (cat of categories(); track cat.id) {
-                <button 
-                    [class.active]="selectedCategory() === cat.id"
-                    (click)="selectCategory(cat.id)">
-                    {{cat.name}}
-                </button>
-            }
-        </nav>
-    </div>
+<div class="menu-nav-wrapper">
+    <nav class="menu-nav">
+        @for (cat of categories(); track cat.id) {
+        <button [class.active]="selectedCategory() === cat.id" (click)="selectCategory(cat.id)">
+            {{cat.name}}
+        </button>
+        }
+    </nav>
+</div>
 
-    <section class="menu-content">
-        <div class="container">
-            @for (cat of categories(); track cat.id) {
-                <div [id]="getCategorySlug(cat.id)" class="menu-category">
-                    <h2 class="category-title">{{cat.name}}</h2>
-                    @if (cat.description) {
-                        <p class="category-description">{{cat.description}}</p>
-                    }
-                    
-                    <div class="menu-grid">
-                        @for (item of getItemsByCategory(cat.id); track item.id) {
-                            <div class="menu-item">
-                                <div class="item-header">
-                                    <div class="item-title-wrapper">
-                                        <h3 class="item-name">{{item.name}}</h3>
-                                        @if (item.isRecommended) {
-                                            <span class="recommended-badge">Chef's Choice</span>
-                                        }
-                                        @if (item.isVegetarian) {
-                                            <span class="vegetarian-badge">🌱</span>
-                                        }
-                                    </div>
-                                    <span class="item-price">€{{formatPrice(item.price)}}</span>
-                                </div>
-                                <p class="item-description">{{item.description}}</p>
-                                @if (item.allergens) {
-                                    <p class="item-allergens">
-                                        <span class="allergen-icon">⚠️</span> {{item.allergens}}
-                                    </p>
-                                }
-                                @if (item.preparationTime) {
-                                    <p class="item-prep-time">
-                                        <span class="time-icon">⏱️</span> {{item.preparationTime}} min
-                                    </p>
-                                }
-                            </div>
-                        } @empty {
-                            <p class="no-items">Nessun piatto disponibile in questa categoria</p>
-                        }
+<section class="menu-content">
+    <div class="container">
+        @for (cat of categories(); track cat.id) {
+        <div [id]="getCategorySlug(cat.id)" class="menu-category">
+            <h2 class="category-title">{{cat.name}}</h2>
+            @if (cat.description) {
+            <p class="category-description">{{cat.description}}</p>
+            }
+
+            <div class="menu-grid">
+                @for (item of getItemsByCategory(cat.id); track item.id) {
+                <div class="menu-item">
+
+                    <!-- Immagine con helper -->
+                    @if (hasImage(item)) {
+                    <img [src]="item.imageUrl" class="menu-item-image" (error)="onImageError($event)">
+                    } @else {
+                    <div class="placeholder-image">
+                        <span class="placeholder-icon">🍝</span>
                     </div>
-                </div>
-            }
+                    }
 
-            <div class="menu-footer-cta">
-                <h2>Pronto per un'esperienza indimenticabile?</h2>
-                <p>Prenota il tuo tavolo e lasciati conquistare dai sapori di Roma</p>
-                <button (click)="navigateToBooking()" class="btn btn-primary">Prenota Ora</button>
+                    <div class="item-header">
+                        <div class="item-title-wrapper">
+                            <h3 class="item-name">{{item.name}}</h3>
+                            @if (item.isRecommended) {
+                            <span class="recommended-badge">Chef's Choice</span>
+                            }
+                            @if (item.isVegetarian) {
+                            <span class="vegetarian-badge">🌱</span>
+                            }
+                        </div>
+                        <span class="item-price">€{{formatPrice(item.price)}}</span>
+                    </div>
+
+                    <p class="item-description">{{item.description}}</p>
+
+                    @if (item.allergens) {
+                    <p class="item-allergens">
+                        <span class="allergen-icon">⚠️</span> {{item.allergens}}
+                    </p>
+                    }
+                </div>
+                }
             </div>
+
         </div>
-    </section>
+        }
+
+        <div class="menu-footer-cta">
+            <h2>Pronto per un'esperienza indimenticabile?</h2>
+            <p>Prenota il tuo tavolo e lasciati conquistare dai sapori di Roma</p>
+            <button (click)="navigateToBooking()" class="btn btn-primary">Prenota Ora</button>
+        </div>
+    </div>
+</section>
 }
 
 <footer>

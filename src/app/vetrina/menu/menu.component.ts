@@ -44,12 +44,12 @@ export class MenuComponent implements OnInit {
         // Ordina per displayOrder
         const sortedCategories = categories.sort((a, b) => a.displayOrder - b.displayOrder);
         this.categories.set(sortedCategories);
-        
+
         // Imposta prima categoria come selezionata
         if (sortedCategories.length > 0) {
           this.selectedCategory.set(sortedCategories[0].id);
         }
-        
+
         // Carica menu items
         this.loadAllMenuItems();
       },
@@ -126,6 +126,15 @@ export class MenuComponent implements OnInit {
     return category ? category.name.toLowerCase().replace(/\s+/g, '-') : '';
   }
 
+  hasImage(item: MenuItemDTO): boolean {
+    return !!item.imageUrl && item.imageUrl.trim() !== '';
+  }
+
+  onImageError(event: any): void {
+    // Placeholder se Base64 è corrotto o mancante
+    // event.target.src = 'assets/images/placeholder-dish.jpg';
+  }
+
   // Helper per formattare prezzo
   formatPrice(price: number): string {
     return price.toFixed(2);
@@ -144,7 +153,7 @@ export class MenuComponent implements OnInit {
       this.navigateToHome();
       return;
     }
-    
+
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
