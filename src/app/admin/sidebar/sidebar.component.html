@@ -1,0 +1,121 @@
+<aside class="admin-sidebar" [class.collapsed]="isCollapsed">
+  <!-- Header Sidebar -->
+  <div class="sidebar-header">
+    <div class="brand">
+      <span class="brand-icon">🍽️</span>
+      @if (!isCollapsed) {
+        <span class="brand-name">Roma Antica</span>
+      }
+    </div>
+    <button class="toggle-btn" (click)="toggleSidebar()">
+      <span>{{ isCollapsed ? '→' : '←' }}</span>
+    </button>
+  </div>
+
+  <!-- Navigation Menu -->
+  <nav class="sidebar-nav">
+    <ul class="menu-list">
+      @for (item of menuItems; track item.id) {
+        <li class="menu-item">
+          
+          <!-- Menu senza sottomenu -->
+          @if (!hasChildren(item)) {
+            <a class="menu-link" 
+               [class.active]="isActive(item.route)"
+               [attr.data-tooltip]="item.label"
+               (click)="navigateTo(item.route, item.id)">
+              <span class="menu-icon">{{ item.icon }}</span>
+              @if (!isCollapsed) {
+                <span class="menu-label">{{ item.label }}</span>
+              }
+            </a>
+          }
+
+          <!-- Menu con sottomenu -->
+          @if (hasChildren(item)) {
+            <div>
+              <a class="menu-link" 
+                 [class.active]="isActive(item.route)"
+                 [class.expanded]="isMenuExpanded(item.id)"
+                 [attr.data-tooltip]="item.label"
+                 [attr.data-has-submenu]="true"
+                 (click)="toggleMenu(item.id, true)">
+                <span class="menu-icon">{{ item.icon }}</span>
+                @if (!isCollapsed) {
+                  <span class="menu-label">{{ item.label }}</span>
+                  <span class="menu-arrow">
+                    {{ isMenuExpanded(item.id) ? '▼' : '▶' }}
+                  </span>
+                }
+              </a>
+
+              <!-- Sottomenu -->
+              @if (isMenuExpanded(item.id) && !isCollapsed) {
+                <ul class="submenu">
+                  @for (child of item.children; track child.id) {
+                    <li class="submenu-item">
+                      <a class="submenu-link" 
+                         [class.active]="isActive(child.route)"
+                         (click)="navigateTo(child.route, child.id)">
+                        <span class="submenu-icon">{{ child.icon }}</span>
+                        <span class="submenu-label">{{ child.label }}</span>
+                      </a>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          }
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <!-- Admin Info -->
+  @if (!isCollapsed) {
+    <div class="admin-info">
+      <div class="admin-avatar">👨‍🍳</div>
+      <div class="admin-details">
+        <p class="admin-name">Giuseppe Rossi</p>
+        <p class="admin-role">Amministratore</p>
+      </div>
+    </div>
+  } @else {
+    <div class="admin-info">
+      <div class="admin-avatar">👨‍🍳</div>
+    </div>
+  }
+
+  <!-- Footer Sidebar -->
+  <div class="sidebar-footer">
+    <a class="footer-link" 
+       [attr.data-tooltip]="'Esci'"
+       (click)="logout()">
+      <span class="menu-icon">🚪</span>
+      @if (!isCollapsed) {
+        <span class="menu-label">Esci</span>
+      }
+    </a>
+  </div>
+</aside>
+
+<!-- Hamburger Menu Button (Mobile Only) -->
+<button class="hamburger-menu" 
+        [class.open]="!isCollapsed"
+        (click)="toggleSidebar()"
+        aria-label="Toggle Menu">
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
+
+<!-- Router Outlet per caricare le pagine -->
+<main class="admin-main" [class.expanded]="isCollapsed">
+  <router-outlet></router-outlet>
+</main>
+
+<!-- Overlay per mobile -->
+<div class="sidebar-overlay" 
+     [class.active]="!isCollapsed" 
+     (click)="closeSidebarOnMobile()">
+</div>
