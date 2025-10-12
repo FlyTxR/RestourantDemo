@@ -13,6 +13,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   @ViewChildren('slide') slideElements!: QueryList<ElementRef>;
   @ViewChildren('dot') dotElements!: QueryList<ElementRef>;
 
+
   currentSlide = 0;
   slideInterval: any;
   lastScroll = 0;

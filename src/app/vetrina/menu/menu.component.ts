@@ -1,19 +1,12 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { CategoryDTO, MenuItemDTO } from '../../models/menu-models';
+import { ShowcaseService } from '../../services/showcase.service';
 
-interface MenuItem {
-  name: string;
-  description: string;
-  price: string;
-  allergens?: string;
-  vegetarian?: boolean;
-  recommended?: boolean;
-}
-
-interface MenuCategory {
-  title: string;
-  items: MenuItem[];
+interface CategoryWithItems {
+  category: CategoryDTO;
+  items: MenuItemDTO[];
 }
 
 @Component({
@@ -24,186 +17,77 @@ interface MenuCategory {
   styleUrl: './menu.component.scss'
 })
 export class MenuComponent implements OnInit {
+  private router = inject(Router);
+  private menuService = inject(ShowcaseService);
+
+  // Signals per state management
+  categories = signal<CategoryDTO[]>([]);
+  menuItems = signal<MenuItemDTO[]>([]);
+  loading = signal<boolean>(false);
+  error = signal<string | null>(null);
+
   lastScroll = 0;
-  selectedCategory = 'antipasti';
-
-  categories = [
-    { id: 'antipasti', label: 'Antipasti' },
-    { id: 'primi', label: 'Primi Piatti' },
-    { id: 'secondi', label: 'Secondi Piatti' },
-    { id: 'contorni', label: 'Contorni' },
-    { id: 'dolci', label: 'Dolci' }
-  ];
-
-  menuData: { [key: string]: MenuCategory } = {
-    antipasti: {
-      title: 'Antipasti',
-      items: [
-        {
-          name: 'Supplì al Telefono',
-          description: 'Classici supplì romani con cuore filante di mozzarella',
-          price: '8',
-          recommended: true
-        },
-        {
-          name: 'Fiori di Zucca',
-          description: 'Fritti in pastella croccante con alici e mozzarella',
-          price: '12',
-          allergens: 'Glutine, Pesce, Latticini'
-        },
-        {
-          name: 'Carciofi alla Giudia',
-          description: 'Carciofi romaneschi fritti secondo tradizione',
-          price: '14',
-          vegetarian: true,
-          recommended: true
-        },
-        {
-          name: 'Bruschette Miste',
-          description: 'Selezione di bruschette con pomodoro, funghi e tartufo',
-          price: '10',
-          allergens: 'Glutine',
-          vegetarian: true
-        }
-      ]
-    },
-    primi: {
-      title: 'Primi Piatti',
-      items: [
-        {
-          name: 'Carbonara',
-          description: 'Guanciale croccante, pecorino romano DOP e tuorlo d\'uovo',
-          price: '16',
-          allergens: 'Glutine, Uova, Latticini',
-          recommended: true
-        },
-        {
-          name: 'Cacio e Pepe',
-          description: 'La semplicità perfetta: pecorino romano e pepe nero',
-          price: '14',
-          allergens: 'Glutine, Latticini',
-          recommended: true
-        },
-        {
-          name: 'Amatriciana',
-          description: 'Guanciale, pomodoro San Marzano e pecorino romano',
-          price: '15',
-          allergens: 'Glutine, Latticini'
-        },
-        {
-          name: 'Gricia',
-          description: 'La carbonara bianca: guanciale croccante e pecorino',
-          price: '15',
-          allergens: 'Glutine, Latticini'
-        },
-        {
-          name: 'Rigatoni con la Pajata',
-          description: 'Piatto tradizionale romano con interiora di vitello',
-          price: '18',
-          allergens: 'Glutine, Latticini'
-        }
-      ]
-    },
-    secondi: {
-      title: 'Secondi Piatti',
-      items: [
-        {
-          name: 'Saltimbocca alla Romana',
-          description: 'Scaloppine di vitello con prosciutto crudo e salvia',
-          price: '22',
-          recommended: true
-        },
-        {
-          name: 'Abbacchio Scottadito',
-          description: 'Costolette d\'agnello alla griglia',
-          price: '26',
-          recommended: true
-        },
-        {
-          name: 'Coda alla Vaccinara',
-          description: 'Coda di bue stufata con pomodoro e sedano',
-          price: '24'
-        },
-        {
-          name: 'Pollo alla Romana',
-          description: 'Pollo con peperoni, pomodoro e vino bianco',
-          price: '20'
-        },
-        {
-          name: 'Filetto di Branzino',
-          description: 'Branzino al forno con erbe aromatiche',
-          price: '24',
-          allergens: 'Pesce'
-        }
-      ]
-    },
-    contorni: {
-      title: 'Contorni',
-      items: [
-        {
-          name: 'Puntarelle alla Romana',
-          description: 'Con salsa di alici e aglio',
-          price: '7',
-          allergens: 'Pesce',
-          vegetarian: false
-        },
-        {
-          name: 'Cicoria Ripassata',
-          description: 'Cicoria saltata con aglio e peperoncino',
-          price: '6',
-          vegetarian: true
-        },
-        {
-          name: 'Patate al Forno',
-          description: 'Croccanti patate arrosto con rosmarino',
-          price: '6',
-          vegetarian: true
-        },
-        {
-          name: 'Insalata Mista',
-          description: 'Verdure fresche di stagione',
-          price: '5',
-          vegetarian: true
-        }
-      ]
-    },
-    dolci: {
-      title: 'Dolci',
-      items: [
-        {
-          name: 'Tiramisù',
-          description: 'Classico tiramisù fatto in casa',
-          price: '8',
-          allergens: 'Glutine, Uova, Latticini',
-          recommended: true
-        },
-        {
-          name: 'Panna Cotta',
-          description: 'Con coulis di frutti di bosco',
-          price: '7',
-          allergens: 'Latticini'
-        },
-        {
-          name: 'Maritozzo con la Panna',
-          description: 'Soffice brioche romana farcita con panna montata',
-          price: '6',
-          allergens: 'Glutine, Uova, Latticini'
-        },
-        {
-          name: 'Crostata di Ricotta e Visciole',
-          description: 'Dolce tradizionale romano',
-          price: '8',
-          allergens: 'Glutine, Uova, Latticini',
-          recommended: true
-        }
-      ]
-    }
-  };
-
-  constructor(private router: Router) {}
+  selectedCategory = signal<number | null>(null);
 
   ngOnInit(): void {
     window.scrollTo(0, 0);
+    this.loadMenuData();
+  }
+
+  loadMenuData(): void {
+    this.loading.set(true);
+    this.error.set(null);
+
+    // Carica categorie
+    this.menuService.getCategories().subscribe({
+      next: (categories) => {
+        // Ordina per displayOrder
+        const sortedCategories = categories.sort((a, b) => a.displayOrder - b.displayOrder);
+        this.categories.set(sortedCategories);
+        
+        // Imposta prima categoria come selezionata
+        if (sortedCategories.length > 0) {
+          this.selectedCategory.set(sortedCategories[0].id);
+        }
+        
+        // Carica menu items
+        this.loadAllMenuItems();
+      },
+      error: (err) => {
+        this.error.set('Errore nel caricamento delle categorie');
+        this.loading.set(false);
+        console.error('Error loading categories:', err);
+      }
+    });
+  }
+
+  loadAllMenuItems(): void {
+    this.menuService.getAllMenuItems().subscribe({
+      next: (items) => {
+        // Filtra solo items disponibili
+        const availableItems = items.filter(item => item.isAvailable);
+        this.menuItems.set(availableItems);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set('Errore nel caricamento del menu');
+        this.loading.set(false);
+        console.error('Error loading menu items:', err);
+      }
+    });
+  }
+
+  // Ritorna items per categoria specifica
+  getItemsByCategory(categoryId: number): MenuItemDTO[] {
+    return this.menuItems().filter(item => item.categoryId === categoryId);
+  }
+
+  // Raggruppa per categorie (per template alternativo)
+  getCategoriesWithItems(): CategoryWithItems[] {
+    return this.categories().map(category => ({
+      category,
+      items: this.getItemsByCategory(category.id)
+    }));
   }
 
   @HostListener('window:scroll', ['$event'])
@@ -222,9 +106,10 @@ export class MenuComponent implements OnInit {
     this.lastScroll = currentScroll;
   }
 
-  selectCategory(categoryId: string): void {
-    this.selectedCategory = categoryId;
-    const element = document.getElementById(categoryId);
+  selectCategory(categoryId: number): void {
+    this.selectedCategory.set(categoryId);
+    const categorySlug = this.getCategorySlug(categoryId);
+    const element = document.getElementById(categorySlug);
     if (element) {
       const offset = 150;
       const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
@@ -233,6 +118,17 @@ export class MenuComponent implements OnInit {
         behavior: 'smooth'
       });
     }
+  }
+
+  // Helper per creare slug da nome categoria
+  getCategorySlug(categoryId: number): string {
+    const category = this.categories().find(c => c.id === categoryId);
+    return category ? category.name.toLowerCase().replace(/\s+/g, '-') : '';
+  }
+
+  // Helper per formattare prezzo
+  formatPrice(price: number): string {
+    return price.toFixed(2);
   }
 
   navigateToHome(): void {

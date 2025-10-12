@@ -19,46 +19,87 @@
     </div>
 </section>
 
-<div class="menu-nav-wrapper">
-    <nav class="menu-nav">
-        <button 
-            *ngFor="let cat of categories" 
-            [class.active]="selectedCategory === cat.id"
-            (click)="selectCategory(cat.id)">
-            {{cat.label}}
-        </button>
-    </nav>
-</div>
+<!-- Loading State -->
+@if (loading()) {
+    <div class="loading-container">
+        <div class="spinner"></div>
+        <p>Caricamento del menu...</p>
+    </div>
+}
 
-<section class="menu-content">
-    <div class="container">
-        <div *ngFor="let cat of categories" [id]="cat.id" class="menu-category">
-            <h2 class="category-title">{{menuData[cat.id].title}}</h2>
-            <div class="menu-grid">
-                <div *ngFor="let item of menuData[cat.id].items" class="menu-item">
-                    <div class="item-header">
-                        <div class="item-title-wrapper">
-                            <h3 class="item-name">{{item.name}}</h3>
-                            <span *ngIf="item.recommended" class="recommended-badge">Chef's Choice</span>
-                            <span *ngIf="item.vegetarian" class="vegetarian-badge">🌱</span>
-                        </div>
-                        <span class="item-price">€{{item.price}}</span>
+<!-- Error State -->
+@if (error()) {
+    <div class="error-container">
+        <p class="error-message">{{ error() }}</p>
+        <button (click)="loadMenuData()" class="btn btn-primary">Riprova</button>
+    </div>
+}
+
+<!-- Menu Content -->
+@if (!loading() && !error()) {
+    <div class="menu-nav-wrapper">
+        <nav class="menu-nav">
+            @for (cat of categories(); track cat.id) {
+                <button 
+                    [class.active]="selectedCategory() === cat.id"
+                    (click)="selectCategory(cat.id)">
+                    {{cat.name}}
+                </button>
+            }
+        </nav>
+    </div>
+
+    <section class="menu-content">
+        <div class="container">
+            @for (cat of categories(); track cat.id) {
+                <div [id]="getCategorySlug(cat.id)" class="menu-category">
+                    <h2 class="category-title">{{cat.name}}</h2>
+                    @if (cat.description) {
+                        <p class="category-description">{{cat.description}}</p>
+                    }
+                    
+                    <div class="menu-grid">
+                        @for (item of getItemsByCategory(cat.id); track item.id) {
+                            <div class="menu-item">
+                                <div class="item-header">
+                                    <div class="item-title-wrapper">
+                                        <h3 class="item-name">{{item.name}}</h3>
+                                        @if (item.isRecommended) {
+                                            <span class="recommended-badge">Chef's Choice</span>
+                                        }
+                                        @if (item.isVegetarian) {
+                                            <span class="vegetarian-badge">🌱</span>
+                                        }
+                                    </div>
+                                    <span class="item-price">€{{formatPrice(item.price)}}</span>
+                                </div>
+                                <p class="item-description">{{item.description}}</p>
+                                @if (item.allergens) {
+                                    <p class="item-allergens">
+                                        <span class="allergen-icon">⚠️</span> {{item.allergens}}
+                                    </p>
+                                }
+                                @if (item.preparationTime) {
+                                    <p class="item-prep-time">
+                                        <span class="time-icon">⏱️</span> {{item.preparationTime}} min
+                                    </p>
+                                }
+                            </div>
+                        } @empty {
+                            <p class="no-items">Nessun piatto disponibile in questa categoria</p>
+                        }
                     </div>
-                    <p class="item-description">{{item.description}}</p>
-                    <p *ngIf="item.allergens" class="item-allergens">
-                        <span class="allergen-icon">⚠️</span> {{item.allergens}}
-                    </p>
                 </div>
+            }
+
+            <div class="menu-footer-cta">
+                <h2>Pronto per un'esperienza indimenticabile?</h2>
+                <p>Prenota il tuo tavolo e lasciati conquistare dai sapori di Roma</p>
+                <button (click)="navigateToBooking()" class="btn btn-primary">Prenota Ora</button>
             </div>
         </div>
-
-        <div class="menu-footer-cta">
-            <h2>Pronto per un'esperienza indimenticabile?</h2>
-            <p>Prenota il tuo tavolo e lasciati conquistare dai sapori di Roma</p>
-            <button (click)="navigateToBooking()" class="btn btn-primary">Prenota Ora</button>
-        </div>
-    </div>
-</section>
+    </section>
+}
 
 <footer>
     <div class="footer-content">
