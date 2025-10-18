@@ -1,0 +1,319 @@
+<header>
+    <nav>
+        <div class="logo">Roma Antica</div>
+        <ul class="nav-links">
+            <li><a (click)="scrollToSection('home')">Home</a></li>
+            <li><a (click)="scrollToSection('storia')">La Nostra Storia</a></li>
+            <li><a (click)="navigateToMenu()">Menu</a></li>
+            <li><a (click)="scrollToSection('contatti')">Contatti</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- Hero Section -->
+<section class="booking-hero">
+    <div class="hero-overlay"></div>
+    <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920&q=80" alt="Restaurant Interior">
+    <div class="hero-content">
+        <h1>Prenota il Tuo Tavolo</h1>
+        <p>Un'esperienza culinaria indimenticabile ti aspetta</p>
+    </div>
+</section>
+
+<!-- Success Modal -->
+@if (success()) {
+<div class="success-modal">
+    <div class="success-content">
+        <div class="success-icon">✓</div>
+        <h2>Prenotazione Confermata!</h2>
+        <p>Riceverai un'email di conferma a breve.</p>
+        <p class="redirect-text">Verrai reindirizzato alla home...</p>
+    </div>
+</div>
+}
+
+<!-- Booking Form Container -->
+<section class="booking-section">
+    <div class="container">
+
+        <!-- Progress Steps -->
+        <div class="progress-steps">
+            <div class="step" [class.active]="currentStep() >= 1" [class.completed]="currentStep() > 1">
+                <div class="step-number">1</div>
+                <div class="step-label">Data & Ora</div>
+            </div>
+            <div class="step-line" [class.active]="currentStep() > 1"></div>
+            <div class="step" [class.active]="currentStep() >= 2" [class.completed]="currentStep() > 2">
+                <div class="step-number">2</div>
+                <div class="step-label">Ospiti</div>
+            </div>
+            <div class="step-line" [class.active]="currentStep() > 2"></div>
+            <div class="step" [class.active]="currentStep() >= 3" [class.completed]="currentStep() > 3">
+                <div class="step-number">3</div>
+                <div class="step-label">I Tuoi Dati</div>
+            </div>
+        </div>
+
+        <!-- Booking Form -->
+        <div class="booking-form-card">
+
+            <!-- Step 1: Date & Time -->
+            @if (currentStep() === 1) {
+            <div class="form-step">
+                <h2 class="step-title">Quando vuoi venirci a trovare?</h2>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="label-icon">📅</span>
+                        Seleziona la Data
+                    </label>
+                    <app-custom-date-picker [minDate]="getMinDate()" [maxDate]="getMaxDate()" [value]="booking().date"
+                        (dateSelected)="updateField('date', $event)">
+                    </app-custom-date-picker>
+
+                    @if (booking().date) {
+                    <div class="date-info">
+                        <span class="date-badge">{{ getDayOfWeek(booking().date) }}</span>
+                    </div>
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="label-icon">🕐</span>
+                        Scegli l'Orario
+                    </label>
+
+                    @if (loadingSlots()) {
+                    <div class="slots-loading">
+                        <div class="loading-spinner"></div>
+                        <p>Caricamento disponibilità...</p>
+                    </div>
+                    } @else {
+                    <div class="time-grid">
+                        @for (slot of timeSlots(); track slot.time) {
+                        <button type="button" class="time-button" [class.selected]="booking().time === slot.time"
+                            [class.unavailable]="!slot.available" [disabled]="!slot.available"
+                            (click)="selectTime(slot.time)">
+                            <span class="time-value">{{ slot.time }}</span>
+
+                            @if (!slot.available) {
+                            <span class="slot-status full">Completo</span>
+                            } @else if (slot.spotsLeft !== undefined && slot.spotsLeft <= 3) { <span
+                                class="slot-status limited">{{ slot.spotsLeft }} posti</span>
+                                } @else if (slot.available) {
+                                <span class="slot-status available">Disponibile</span>
+                                }
+                        </button>
+                        }
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="availability-legend">
+                        <div class="legend-item">
+                            <span class="legend-dot available"></span>
+                            <span>Disponibile</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot limited"></span>
+                            <span>Ultimi posti</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot full"></span>
+                            <span>Completo</span>
+                        </div>
+                    </div>
+                    }
+                </div>
+
+                @if (booking().date && booking().time) {
+                <div class="selection-summary">
+                    <span class="summary-icon">📌</span>
+                    <span class="summary-text">
+                        {{ formatDate(booking().date) }} alle ore {{ booking().time }}
+                    </span>
+                </div>
+                }
+            </div>
+            }
+
+
+            <!-- Step 2: Number of Guests -->
+            @if (currentStep() === 2) {
+            <div class="form-step">
+                <h2 class="step-title">Quanti ospiti sarete?</h2>
+
+                <div class="guests-grid">
+                    @for (num of guestOptions; track num) {
+                    <button type="button" class="guest-button" [class.selected]="booking().numberOfGuests === num"
+                        (click)="updateField('numberOfGuests', num)">
+                        <span class="guest-icon">👥</span>
+                        <span class="guest-number">{{ num }}</span>
+                        <span class="guest-label">{{ num === 1 ? 'Persona' : 'Persone' }}</span>
+                    </button>
+                    }
+                </div>
+
+                @if (booking().numberOfGuests > 10) {
+                <div class="large-party-notice">
+                    <p>Per gruppi superiori a 10 persone, contattaci direttamente:</p>
+                    <a href="tel:+390212345678" class="contact-link">📞 +39 02 1234567</a>
+                </div>
+                }
+            </div>
+            }
+
+            <!-- Step 3: Customer Details -->
+            @if (currentStep() === 3) {
+            <div class="form-step">
+                <h2 class="step-title">I Tuoi Dati</h2>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="label-icon">👤</span>
+                        Nome Completo *
+                    </label>
+                    <input type="text" class="form-input" placeholder="Mario Rossi" [value]="booking().customerName"
+                        (input)="updateField('customerName', $any($event.target).value)" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span class="label-icon">📧</span>
+                            Email *
+                        </label>
+                        <input type="email" class="form-input" placeholder="mario.rossi@email.it"
+                            [value]="booking().customerEmail"
+                            (input)="updateField('customerEmail', $any($event.target).value)" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span class="label-icon">📞</span>
+                            Telefono *
+                        </label>
+                        <input type="tel" class="form-input" placeholder="+39 333 1234567"
+                            [value]="booking().customerPhone"
+                            (input)="updateField('customerPhone', $any($event.target).value)" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="label-icon">💭</span>
+                        Richieste Speciali (Opzionale)
+                    </label>
+                    <textarea class="form-textarea" rows="4" placeholder="Allergie, intolleranze, occasioni speciali..."
+                        [value]="booking().specialRequests || ''"
+                        (input)="updateField('specialRequests', $any($event.target).value)">
+            </textarea>
+                </div>
+
+                <!-- Booking Summary -->
+                <div class="booking-summary">
+                    <h3 class="summary-title">Riepilogo Prenotazione</h3>
+                    <div class="summary-items">
+                        <div class="summary-item">
+                            <span class="summary-label">📅 Data:</span>
+                            <span class="summary-value">{{ formatDate(booking().date) }}</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">🕐 Orario:</span>
+                            <span class="summary-value">{{ booking().time }}</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">👥 Ospiti:</span>
+                            <span class="summary-value">{{ booking().numberOfGuests }} {{ booking().numberOfGuests === 1
+                                ? 'persona' : 'persone' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+
+            <!-- Error Message -->
+            @if (error()) {
+            <div class="error-message">
+                <span class="error-icon">⚠️</span>
+                {{ error() }}
+            </div>
+            }
+
+            <!-- Navigation Buttons -->
+            <div class="form-actions">
+                @if (currentStep() > 1) {
+                <button type="button" class="btn btn-secondary" (click)="prevStep()">
+                    ← Indietro
+                </button>
+                }
+
+                @if (currentStep() < 3) { <button type="button" class="btn btn-primary"
+                    [disabled]="!isStepValid(currentStep())" (click)="nextStep()">
+                    Avanti →
+                    </button>
+                    }
+
+                    @if (currentStep() === 3) {
+                    <button type="button" class="btn btn-primary btn-submit" [disabled]="loading() || !isStepValid(3)"
+                        (click)="submitBooking()">
+                        @if (loading()) {
+                        <span class="btn-spinner"></span>
+                        Invio in corso...
+                        } @else {
+                        ✓ Conferma Prenotazione
+                        }
+                    </button>
+                    }
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<!-- Info Section -->
+<section class="info-section">
+    <div class="container">
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-icon">📍</div>
+                <h3>Dove Siamo</h3>
+                <p>Via Esempio 123<br>20100 Milano, MI</p>
+            </div>
+            <div class="info-card">
+                <div class="info-icon">📞</div>
+                <h3>Contattaci</h3>
+                <p>Tel: +39 02 1234567<br>Email: info&#64;romaantica.it</p>
+            </div>
+            <div class="info-card">
+                <div class="info-icon">🕐</div>
+                <h3>Orari</h3>
+                <p>Mar - Sab: 12:00-15:00, 19:00-23:00<br>Domenica e Lunedì: Chiuso</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>Roma Antica</h3>
+            <p>L'eccellenza della cucina romana</p>
+        </div>
+        <div class="footer-section">
+            <h3>Contatti</h3>
+            <p>Via Esempio 123, Milano<br>
+                Tel: +39 02 1234567<br>
+                info&#64;romaantica.it</p>
+        </div>
+        <div class="footer-section">
+            <h3>Orari</h3>
+            <p>Martedì - Sabato<br>
+                12:00-15:00, 19:00-23:00<br>
+                Domenica e Lunedì: Chiuso</p>
+        </div>
+    </div>
+    <p>&copy; 2025 Roma Antica. Tutti i diritti riservati.</p>
+</footer>

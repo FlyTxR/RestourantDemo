@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './vetrina/home/home.component';
 import { MenuComponent } from './vetrina/menu/menu.component';
+import { BookingComponent } from './vetrina/booking/booking.component';
 
 export const routes: Routes = [
     {
@@ -12,6 +13,11 @@ export const routes: Routes = [
         path: 'menu',
         component: MenuComponent,
         title: 'Roma Antica - Menù'
+    },
+        {
+        path: 'prenotazioni',
+        component: BookingComponent,
+        title: 'Roma Antica - Prenotazioni'
     },
     {
         path: 'admin',

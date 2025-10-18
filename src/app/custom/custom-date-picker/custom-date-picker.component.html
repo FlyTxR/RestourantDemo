@@ -1,0 +1,67 @@
+<div class="date-picker-container">
+  <button 
+    type="button"
+    class="date-picker-trigger" 
+    (click)="togglePicker()">
+    <span class="trigger-icon">📅</span>
+    <span class="trigger-text">
+      {{ selectedDate() ? formatDisplayDate(selectedDate()!) : 'Seleziona una data' }}
+    </span>
+    <span class="trigger-arrow" [class.open]="isOpen()">▼</span>
+  </button>
+
+  @if (isOpen()) {
+    <div class="date-picker-dropdown" (click)="$event.stopPropagation()">
+      
+      <!-- Header -->
+      <div class="picker-header">
+        <button type="button" class="nav-btn" (click)="previousMonth()">◀</button>
+        <div class="current-month">
+          {{ getMonthName(currentMonth()) }} {{ currentYear() }}
+        </div>
+        <button type="button" class="nav-btn" (click)="nextMonth()">▶</button>
+      </div>
+
+      <!-- Weekdays -->
+      <div class="weekdays">
+        <div class="weekday">Lun</div>
+        <div class="weekday">Mar</div>
+        <div class="weekday">Mer</div>
+        <div class="weekday">Gio</div>
+        <div class="weekday">Ven</div>
+        <div class="weekday">Sab</div>
+        <div class="weekday">Dom</div>
+      </div>
+
+      <!-- Calendar Grid -->
+      <div class="calendar-grid">
+        @for (day of calendarDays(); track day.date.getTime()) {
+          <button
+            type="button"
+            class="calendar-day"
+            [class.other-month]="!day.isCurrentMonth"
+            [class.today]="day.isToday"
+            [class.selected]="day.isSelected"
+            [class.disabled]="day.isDisabled"
+            [class.past]="day.isPast"
+            [disabled]="day.isDisabled"
+            (click)="selectDate(day)">
+            {{ day.day }}
+          </button>
+        }
+      </div>
+
+      <!-- Footer -->
+      <div class="picker-footer">
+        <button type="button" class="quick-btn" (click)="selectToday()">Oggi</button>
+        <button type="button" class="quick-btn" (click)="selectTomorrow()">Domani</button>
+        <button type="button" class="quick-btn" (click)="selectWeekend()">Sabato</button>
+      </div>
+
+    </div>
+  }
+</div>
+
+@if (isOpen()) {
+  <div class="picker-overlay" (click)="closePicker()"></div>
+}
