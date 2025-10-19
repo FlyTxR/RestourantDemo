@@ -1,0 +1,916 @@
+// ============================================
+// VARIABLES - Palette Ristorante
+// ============================================
+$primary-color: #C0392B;
+$primary-hover: #A93226;
+$accent-color: #F39C12;
+$accent-hover: #E67E22;
+$background: #F7F7F7;
+$card-bg: #FFFFFF;
+$text-primary: #333333;
+$text-secondary: #666666;
+$text-light: #999999;
+$border-color: #E0E0E0;
+$success: #27AE60;
+$warning: #F39C12;
+$danger: #E74C3C;
+$info: #3498DB;
+
+// Spacing
+$spacing-xs: 0.5rem;
+$spacing-sm: 1rem;
+$spacing-md: 1.5rem;
+$spacing-lg: 2rem;
+$spacing-xl: 3rem;
+
+// Border Radius
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 12px;
+
+// Shadows
+$shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+$shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+$shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.15);
+
+// Breakpoints
+$breakpoint-mobile: 576px;
+$breakpoint-tablet: 768px;
+$breakpoint-desktop: 1024px;
+$breakpoint-wide: 1280px;
+
+// ============================================
+// MIXINS
+// ============================================
+@mixin card-base {
+  background: $card-bg;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  box-shadow: $shadow-sm;
+  transition: box-shadow 0.3s ease;
+}
+
+@mixin hover-lift {
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-hover;
+  }
+}
+
+@mixin button-base {
+  padding: $spacing-sm $spacing-md;
+  border: none;
+  border-radius: $radius-md;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  
+  &:focus {
+    outline: 3px solid rgba($primary-color, 0.3);
+    outline-offset: 2px;
+  }
+  
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+// ============================================
+// DASHBOARD CONTAINER
+// ============================================
+.dashboard-container {
+  padding: 0; // Rimosso padding
+  background: $background;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  color: $text-primary;
+  margin: 0;
+  box-sizing: border-box;
+  overflow-x: hidden; // Previene scroll orizzontale
+}
+
+// ============================================
+// HEADER
+// ============================================
+.dashboard-header {
+  position: relative; // Cambiato da fixed
+  box-sizing: border-box;
+  width: 100%;
+  overflow-x: hidden;
+  margin-bottom: 0;
+  background-color: #2C2C2C;
+  padding: $spacing-md $spacing-lg;
+  z-index: 100;
+
+  .header-content {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+    @media (min-width: $breakpoint-tablet) {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  .title-section {
+    flex: 1 1 0;
+    min-width: 0;
+
+    h1 {
+      margin: 0 0 $spacing-xs 0;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #FFFFFF;
+
+      @media (min-width: $breakpoint-tablet) {
+        font-size: 2.5rem;
+      }
+    }
+
+    .subtitle {
+      margin: 0 0 $spacing-sm 0;
+      color: #CCCCCC;
+      font-size: 1rem;
+    }
+  }
+
+  .breadcrumb {
+    display: flex;
+    gap: $spacing-xs;
+    font-size: 0.875rem;
+    color: #999999;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    .separator {
+      color: #666666;
+    }
+
+    .current {
+      color: $primary-color;
+      font-weight: 500;
+    }
+  }
+
+  .btn-primary {
+    @include button-base;
+    background: linear-gradient(135deg, $primary-color 0%, $primary-hover 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    white-space: nowrap;
+    align-self: flex-start;
+    flex: 0 0 auto;
+    min-width: 0;
+
+    .icon {
+      font-size: 1.25rem;
+    }
+
+    &:hover {
+      background: linear-gradient(135deg, $primary-hover 0%, darken($primary-hover, 5%) 100%);
+      box-shadow: $shadow-md;
+    }
+
+    @media (min-width: $breakpoint-tablet) {
+      align-self: center;
+    }
+  }
+}
+
+
+
+
+// ============================================
+// SUMMARY CARDS
+// ============================================
+.summary-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+  width: 100%;
+  box-sizing: border-box;
+
+  @media (min-width: $breakpoint-mobile) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: $breakpoint-desktop) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .card {
+    @include card-base;
+    display: flex;
+    gap: $spacing-md;
+    align-items: center;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+
+    &:hover {
+      @include hover-lift;
+    }
+
+    .card-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: $radius-md;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      flex-shrink: 0;
+    }
+
+    .card-content {
+      flex: 1;
+      min-width: 0;
+
+      h3 {
+        margin: 0 0 $spacing-xs 0;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: $text-secondary;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .card-value {
+        margin: 0 0 $spacing-xs 0;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: $text-primary;
+      }
+
+      .card-trend {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.813rem;
+        font-weight: 500;
+
+        &.positive {
+          color: $success;
+        }
+
+        &.negative {
+          color: $danger;
+        }
+
+        .trend-icon {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+}
+
+
+// ============================================
+// MAIN CONTENT WRAPPER 
+// ============================================
+.main-content {
+  padding: $spacing-lg;
+  max-width: 100%;
+  box-sizing: border-box;
+  
+  @media (max-width: $breakpoint-mobile) {
+    padding: $spacing-md;
+  }
+}
+
+// ============================================
+// MAIN GRID
+// ============================================
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-md;
+  width: 100%;
+  box-sizing: border-box;
+
+  @media (min-width: $breakpoint-tablet) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: $breakpoint-desktop) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .card-elevated {
+    @include card-base;
+    box-sizing: border-box;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-md;
+
+    h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: $text-primary;
+    }
+
+    .view-all {
+      color: $primary-color;
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: $primary-hover;
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// ============================================
+// CHART SECTION
+// ============================================
+.chart-section {
+  grid-column: 1 / -1;
+
+  @media (min-width: $breakpoint-desktop) {
+    grid-column: span 2;
+  }
+
+  .chart-legend {
+    display: flex;
+    gap: $spacing-md;
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+      font-size: 0.875rem;
+      color: $text-secondary;
+
+      .legend-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+    }
+  }
+
+  .chart-placeholder {
+    margin-top: $spacing-md;
+    border-radius: $radius-md;
+    overflow: hidden;
+
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  }
+}
+
+// ============================================
+// CALENDAR SECTION
+// ============================================
+.calendar-section {
+  .calendar-widget {
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: $spacing-md;
+      background: linear-gradient(135deg, $primary-color 0%, $primary-hover 100%);
+      border-radius: $radius-md;
+      color: white;
+      margin-bottom: $spacing-md;
+
+      .calendar-nav {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s ease;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.3);
+        }
+
+        &:focus {
+          outline: 2px solid white;
+          outline-offset: 2px;
+        }
+      }
+
+      .calendar-date {
+        text-align: center;
+
+        .date-day {
+          margin: 0;
+          font-size: 2rem;
+          font-weight: 700;
+        }
+
+        .date-month {
+          margin: 0;
+          font-size: 0.875rem;
+          font-weight: 500;
+          text-transform: uppercase;
+          opacity: 0.9;
+        }
+      }
+    }
+
+    .booking-count {
+      text-align: center;
+      padding: $spacing-md 0;
+      border-bottom: 1px solid $border-color;
+      margin-bottom: $spacing-md;
+
+      .count-number {
+        margin: 0 0 $spacing-xs 0;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: $primary-color;
+      }
+
+      .count-label {
+        margin: 0;
+        font-size: 0.875rem;
+        color: $text-secondary;
+      }
+    }
+
+    .time-slots {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-sm;
+
+      .time-slot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: $spacing-sm;
+        background: $background;
+        border-radius: $radius-sm;
+        transition: background 0.3s ease;
+
+        &:hover {
+          background: darken($background, 3%);
+        }
+
+        .slot-time {
+          font-weight: 600;
+          color: $text-primary;
+        }
+
+        .slot-count {
+          font-size: 0.875rem;
+          color: $text-secondary;
+          padding: 4px 8px;
+          background: white;
+          border-radius: $radius-sm;
+
+          &.full {
+            color: $danger;
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// QUICK ACTIONS
+// ============================================
+.quick-actions {
+  .actions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-sm;
+
+    .action-btn {
+      @include button-base;
+      background: $background;
+      color: $text-primary;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: $spacing-xs;
+      padding: $spacing-md;
+      text-align: center;
+      border: 2px solid transparent;
+
+      .action-icon {
+        font-size: 2rem;
+      }
+
+      .action-label {
+        font-size: 0.813rem;
+        font-weight: 500;
+      }
+
+      &:hover {
+        background: white;
+        border-color: $primary-color;
+        color: $primary-color;
+        transform: translateY(-2px);
+        box-shadow: $shadow-md;
+      }
+    }
+  }
+}
+
+// ============================================
+// GALLERY PREVIEW
+// ============================================
+.gallery-preview {
+  grid-column: 1 / -1;
+
+  @media (min-width: $breakpoint-desktop) {
+    grid-column: span 2;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-md;
+
+    @media (min-width: $breakpoint-tablet) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .gallery-item {
+      position: relative;
+      aspect-ratio: 4 / 3;
+      border-radius: $radius-md;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: scale(1.05);
+
+        .gallery-overlay {
+          opacity: 1;
+        }
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .gallery-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: $spacing-sm;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+
+        .overlay-btn {
+          background: rgba(255, 255, 255, 0.9);
+          border: none;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          cursor: pointer;
+          font-size: 1.25rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background: white;
+            transform: scale(1.1);
+          }
+
+          &:focus {
+            outline: 2px solid white;
+            outline-offset: 2px;
+          }
+
+          &.delete:hover {
+            background: $danger;
+            color: white;
+          }
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// BOOKINGS TABLE
+// ============================================
+.bookings-table {
+  grid-column: 1 / -1;
+
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+
+    thead {
+      background: $background;
+
+      tr {
+        th {
+          padding: $spacing-sm $spacing-md;
+          text-align: left;
+          font-weight: 600;
+          color: $text-secondary;
+          text-transform: uppercase;
+          font-size: 0.75rem;
+          letter-spacing: 0.5px;
+          border-bottom: 2px solid $border-color;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid $border-color;
+        transition: background 0.3s ease;
+
+        &:hover {
+          background: $background;
+        }
+
+        td {
+          padding: $spacing-md;
+          color: $text-primary;
+
+          &.customer-cell {
+            display: flex;
+            align-items: center;
+            gap: $spacing-sm;
+
+            .customer-avatar {
+              width: 36px;
+              height: 36px;
+              border-radius: 50%;
+              background: linear-gradient(135deg, $primary-color, $accent-color);
+              color: white;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-weight: 600;
+              flex-shrink: 0;
+            }
+          }
+
+          .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+
+            &.status-confirmed {
+              background: rgba($success, 0.1);
+              color: $success;
+            }
+
+            &.status-pending {
+              background: rgba($warning, 0.1);
+              color: $warning;
+            }
+
+            &.status-cancelled {
+              background: rgba($danger, 0.1);
+              color: $danger;
+            }
+          }
+
+          .btn-view {
+            @include button-base;
+            background: transparent;
+            color: $primary-color;
+            border: 1px solid $primary-color;
+            padding: 6px 16px;
+            font-size: 0.813rem;
+
+            &:hover {
+              background: $primary-color;
+              color: white;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// QUICK SETTINGS
+// ============================================
+.quick-settings {
+  .settings-links {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+
+    .setting-link {
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
+      padding: $spacing-md;
+      background: $background;
+      border-radius: $radius-md;
+      text-decoration: none;
+      color: $text-primary;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+
+      &:hover {
+        background: white;
+        border-color: $primary-color;
+        transform: translateX(4px);
+        box-shadow: $shadow-md;
+      }
+
+      &:focus {
+        outline: 3px solid rgba($primary-color, 0.3);
+        outline-offset: 2px;
+      }
+
+      .setting-icon {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+      }
+
+      .setting-text {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        strong {
+          font-weight: 600;
+          font-size: 0.938rem;
+        }
+
+        small {
+          font-size: 0.813rem;
+          color: $text-secondary;
+        }
+      }
+
+      .setting-arrow {
+        font-size: 1.5rem;
+        color: $text-light;
+        transition: transform 0.3s ease;
+      }
+
+      &:hover .setting-arrow {
+        transform: translateX(4px);
+        color: $primary-color;
+      }
+    }
+  }
+}
+
+// ============================================
+// FOOTER
+// ============================================
+.dashboard-footer {
+  margin-top: $spacing-xl;
+  padding-top: $spacing-md;
+  border-top: 1px solid $border-color;
+  text-align: center;
+
+  p {
+    margin: 0;
+    color: $text-light;
+    font-size: 0.813rem;
+  }
+}
+
+// ============================================
+// RESPONSIVE ADJUSTMENTS
+// ============================================
+@media (max-width: $breakpoint-mobile) {
+  .dashboard-container {
+    padding: 0;
+  }
+
+  .main-content {
+    padding: $spacing-sm;
+  }
+
+  .dashboard-header {
+    padding: $spacing-md $spacing-sm;
+    
+    .header-content {
+      .title-section h1 {
+        font-size: 1.5rem;
+      }
+    }
+
+    .btn-primary {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .summary-cards .card {
+    .card-icon {
+      width: 50px;
+      height: 50px;
+      font-size: 1.5rem;
+    }
+
+    .card-content .card-value {
+      font-size: 1.5rem;
+    }
+  }
+
+  .bookings-table {
+    table {
+      font-size: 0.75rem;
+
+      thead th,
+      tbody td {
+        padding: $spacing-xs $spacing-sm;
+      }
+    }
+  }
+}
+
+// Previeni overflow su tutti gli elementi
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+// ============================================
+// UTILITY CLASSES
+// ============================================
+.text-center {
+  text-align: center;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.mt-2 {
+  margin-top: $spacing-md;
+}
+
+// ============================================
+// ANGULAR MATERIAL ADAPTATION NOTES
+// Se vuoi integrare Angular Material:
+// 1. Sostituisci i bottoni custom con <button mat-raised-button color="primary">
+// 2. Usa <mat-card> al posto di .card-elevated
+// 3. Tabella: usa <mat-table> con DataSource
+// 4. Calendario: usa <mat-datepicker>
+// 5. Import necessari: MatButtonModule, MatCardModule, MatTableModule, MatDatepickerModule
+// ============================================

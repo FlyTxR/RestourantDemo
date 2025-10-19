@@ -1,4 +1,232 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <!-- Header Section -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1>Admin Dashboard</h1>
+        <p class="subtitle">Panoramica gestionale del tuo ristorante</p>
+      </div>
+    </div>
+  </header>
 
+  <!-- Summary Cards -->
+  <section class="summary-cards" aria-label="Statistiche principali">
+    <div class="card" *ngFor="let card of summaryCards" [attr.aria-label]="card.label">
+      <div class="card-icon" [style.background]="card.iconBg">
+        <span [innerHTML]="card.icon"></span>
+      </div>
+      <div class="card-content">
+        <h3>{{ card.label }}</h3>
+        <p class="card-value">{{ card.value }}</p>
+        <span class="card-trend" [class.positive]="card.change >= 0" [class.negative]="card.change < 0">
+          <span class="trend-icon">{{ card.change >= 0 ? '↑' : '↓' }}</span>
+          {{ card.change >= 0 ? '+' : '' }}{{ card.change }}% vs mese scorso
+        </span>
+      </div>
+    </div>
+  </section>
 
-<button (click)="test()"> click me </button>
+  <!-- Main Content Grid -->
+  <div class="main-grid">
+    <!-- Chart Section -->
+    <section class="chart-section card-elevated">
+      <div class="section-header">
+        <h2>Vendite Settimanali</h2>
+        <div class="chart-legend">
+          <span class="legend-item">
+            <span class="legend-dot" style="background: #C0392B;"></span>
+            Pranzo
+          </span>
+          <span class="legend-item">
+            <span class="legend-dot" style="background: #F39C12;"></span>
+            Cena
+          </span>
+        </div>
+      </div>
+      <div class="chart-placeholder" role="img" aria-label="Grafico vendite settimanali">
+        <svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+          <!-- Grid lines -->
+          <line x1="50" y1="250" x2="550" y2="250" stroke="#E0E0E0" stroke-width="1"/>
+          <line x1="50" y1="200" x2="550" y2="200" stroke="#E0E0E0" stroke-width="1"/>
+          <line x1="50" y1="150" x2="550" y2="150" stroke="#E0E0E0" stroke-width="1"/>
+          <line x1="50" y1="100" x2="550" y2="100" stroke="#E0E0E0" stroke-width="1"/>
+          <line x1="50" y1="50" x2="550" y2="50" stroke="#E0E0E0" stroke-width="1"/>
+          
+          <!-- Lunch line (red) -->
+          <polyline points="50,180 120,150 190,130 260,160 330,120 400,140 470,100 540,110" 
+                    fill="none" stroke="#C0392B" stroke-width="3"/>
+          
+          <!-- Dinner line (orange) -->
+          <polyline points="50,200 120,190 190,170 260,180 330,150 400,160 470,130 540,140" 
+                    fill="none" stroke="#F39C12" stroke-width="3"/>
+          
+          <!-- Days labels -->
+          <text x="50" y="270" font-size="12" fill="#666">Lun</text>
+          <text x="120" y="270" font-size="12" fill="#666">Mar</text>
+          <text x="190" y="270" font-size="12" fill="#666">Mer</text>
+          <text x="260" y="270" font-size="12" fill="#666">Gio</text>
+          <text x="330" y="270" font-size="12" fill="#666">Ven</text>
+          <text x="400" y="270" font-size="12" fill="#666">Sab</text>
+          <text x="470" y="270" font-size="12" fill="#666">Dom</text>
+        </svg>
+        <!-- Per integrare Chart.js: sostituire questo div con <canvas #chartCanvas></canvas> -->
+      </div>
+    </section>
+
+    <!-- Booking Calendar -->
+    <section class="calendar-section card-elevated">
+      <div class="section-header">
+        <h2>Prenotazioni</h2>
+      </div>
+      <div class="calendar-widget">
+        <div class="calendar-header">
+          <button class="calendar-nav" (click)="previousDay()" aria-label="Giorno precedente">‹</button>
+          <div class="calendar-date">
+            <p class="date-day">{{ selectedDate.day }}</p>
+            <p class="date-month">{{ selectedDate.month }}</p>
+          </div>
+          <button class="calendar-nav" (click)="nextDay()" aria-label="Giorno successivo">›</button>
+        </div>
+        <div class="booking-count">
+          <p class="count-number">{{ todayBookingsCount }}</p>
+          <p class="count-label">Prenotazioni oggi</p>
+        </div>
+        <div class="time-slots">
+          <div class="time-slot" *ngFor="let slot of timeSlots">
+            <span class="slot-time">{{ slot.time }}</span>
+            <span class="slot-count" [class.full]="slot.booked >= slot.capacity">
+              {{ slot.booked }}/{{ slot.capacity }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="quick-actions card-elevated">
+      <div class="section-header">
+        <h2>Azioni Rapide</h2>
+      </div>
+      <div class="actions-grid">
+        <button class="action-btn" (click)="onAddDish()" aria-label="Aggiungi nuovo piatto">
+          <span class="action-icon">🍽️</span>
+          <span class="action-label">Aggiungi Piatto</span>
+        </button>
+        <button class="action-btn" (click)="onManageCategories()" aria-label="Gestisci categorie menu">
+          <span class="action-icon">📋</span>
+          <span class="action-label">Gestisci Categorie</span>
+        </button>
+        <button class="action-btn" (click)="onUploadImages()" aria-label="Carica immagini gallery">
+          <span class="action-icon">📸</span>
+          <span class="action-label">Carica Immagini</span>
+        </button>
+        <button class="action-btn" (click)="test()">
+          <span class="action-icon">🧪</span>
+          <span class="action-label">Test Button</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Gallery Preview -->
+    <section class="gallery-preview card-elevated">
+      <div class="section-header">
+        <h2>Anteprima Gallery</h2>
+        <a href="#" class="view-all">Vedi tutte →</a>
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item" *ngFor="let image of galleryImages" [attr.aria-label]="image.alt">
+          <img [src]="image.url" [alt]="image.alt" loading="lazy">
+          <div class="gallery-overlay">
+            <button class="overlay-btn" (click)="onEditImage(image)" aria-label="Modifica immagine">
+              ✏️
+            </button>
+            <button class="overlay-btn delete" (click)="onDeleteImage(image)" aria-label="Elimina immagine">
+              🗑️
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent Bookings Table -->
+    <section class="bookings-table card-elevated">
+      <div class="section-header">
+        <h2>Prenotazioni Recenti</h2>
+        <a href="#" class="view-all">Vedi tutte →</a>
+      </div>
+      <div class="table-responsive">
+        <table role="table" aria-label="Elenco prenotazioni recenti">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Data</th>
+              <th>Ora</th>
+              <th>Persone</th>
+              <th>Stato</th>
+              <th>Azioni</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let booking of recentBookings">
+              <td class="customer-cell">
+                <span class="customer-avatar">{{ booking.customer.charAt(0) }}</span>
+                <span>{{ booking.customer }}</span>
+              </td>
+              <td>{{ booking.date }}</td>
+              <td>{{ booking.time }}</td>
+              <td>{{ booking.guests }}</td>
+              <td>
+                <span class="status-badge" [class]="'status-' + booking.status">
+                  {{ booking.statusLabel }}
+                </span>
+              </td>
+              <td>
+                <button class="btn-view" (click)="onViewBooking(booking)" aria-label="Visualizza dettagli prenotazione">
+                  Visualizza
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Quick Settings -->
+    <section class="quick-settings card-elevated">
+      <div class="section-header">
+        <h2>Impostazioni Rapide</h2>
+      </div>
+      <div class="settings-links">
+        <a href="#" class="setting-link" (click)="onSettingsGeneral($event)">
+          <span class="setting-icon">⚙️</span>
+          <span class="setting-text">
+            <strong>Generali</strong>
+            <small>Configurazione base</small>
+          </span>
+          <span class="setting-arrow">›</span>
+        </a>
+        <a href="#" class="setting-link" (click)="onSettingsContact($event)">
+          <span class="setting-icon">📞</span>
+          <span class="setting-text">
+            <strong>Contatti</strong>
+            <small>Info di contatto</small>
+          </span>
+          <span class="setting-arrow">›</span>
+        </a>
+        <a href="#" class="setting-link" (click)="onSettingsUsers($event)">
+          <span class="setting-icon">👥</span>
+          <span class="setting-text">
+            <strong>Utenti</strong>
+            <small>Gestione accessi</small>
+          </span>
+          <span class="setting-arrow">›</span>
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <footer class="dashboard-footer">
+    <p>RestaurantDemo Admin Panel v1.0.3 • © 2025</p>
+  </footer>
+</div>
